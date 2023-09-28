@@ -187,13 +187,13 @@ int parse(resolv_conf_t *out, char *in, size_t len)
 	out->nameservers = nameservers.data;
 	out->domains = domains.data;
 	out->options.ndots = 1;
-    out->options.debug = false;
-    out->options.ends0 = false;
-    out->options.inet6 = false;
-    out->options.ins1 = false;
-    out->options.ins2 = false;
-    out->options.tcp = false;
-    out->options.trust_ad = false;
+	out->options.debug = false;
+	out->options.ends0 = false;
+	out->options.inet6 = false;
+	out->options.ins1 = false;
+	out->options.ins2 = false;
+	out->options.tcp = false;
+	out->options.trust_ad = false;
 
 	return 0;
 }
