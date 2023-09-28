@@ -75,68 +75,73 @@
 	search_domain = search_domain_word ('.' search_domain_word)* '.'?;
 
 	# cmd options
-	options_debug = "debug";
-	options_timeout = "timeout" ':' ([0-1]?[0-9]?[0-9]);
-	options_attempts = "attempts" ':' ([0-1]?[0-9]?[0-9]);
-	options_rotate = "rotate";
-	options_no_check_names = "no-check-names";
-	options_edns = "edns0";
-	options_inet6 = "inet6";
-	options_inet6_bytestring = "ip6-bytestring";
-	options_ip6_dotint = "ip6-dotint";
-	options_no_ip6_dotint = "no-ip6-dotint";
-	options_single_request = "single-request";
+	options_attempts =              "attempts" ':' ([0-1]?[0-9]?[0-9]);
+	options_debug =                 "debug";
+	options_edns =                  "edns0";
+	options_inet6 =                 "inet6";
+	options_inet6_bytestring =      "ip6-bytestring";
+	options_insecure1 =             "insecure1";
+	options_insecure2 =             "insecure2";
+	options_ip6_dotint =            "ip6-dotint";
+	options_ndots =                 "ndots" ':' ([0-1]?[0-9]?[0-9]);
+	options_no_check_names =        "no-check-names";
+	options_no_ip6_dotint =         "no-ip6-dotint";
+	options_no_reload =             "no-reload";
+	options_no_tld_query =          "no-tld-query";
+	options_rotate =                "rotate";
+	options_single_request =        "single-request";
 	options_single_request_reopen = "single-request-reopen";
-	options_no_tld_query = "no-tld-query";
-	options_use_vc = "use-vc";
-	options_no_reload = "no-reload";
-	options_insecure1 = "insecure1";
-	options_insecure2 = "insecure2";
-	options_ndots = "ndots" ':' ([0-1]?[0-9]?[0-9]);
-	options_tcp = "tcp";
-	options_trust_ad = "trust-ad";
+	options_tcp =                   "tcp";
+	options_timeout =               "timeout" ':' ([0-1]?[0-9]?[0-9]);
+	options_trust_ad =              "trust-ad";
+	options_use_vc =                "use-vc";
 
 	# cmd
-	comment = '#' [^\n]*;
+	comment =    '#' [^\n]*;
+	domain =     "domain" %domain_clean ws (search_domain) >store_value_ptr %domain_store;
+	family =     "family" (ws "inet" [46]){1,2};
+	lookup =     "lookup" ws (
+			"bind" |
+			"bind" ws "file" |
+			"file" |
+			"file" ws "bind"
+		);
 	nameserver = "nameserver" ws ip;
-	domain = "domain" %domain_clean ws (search_domain) >store_value_ptr %domain_store;
-	search = "search" %domain_clean (ws (search_domain) >store_value_ptr %domain_store)+;
-	lookup = "lookup" ws ("bind" | "file"){1,2}; #validate count
-	sortlist = "sortlist" (ws ip ('/' ip)?)+;
-	family = "family" (ws "inet" [46]){1,2};
-	options = "options" (ws (
-			options_debug |
-			options_timeout |
+	options =    "options" (ws (
 			options_attempts |
-			options_rotate |
-			options_no_check_names |
+			options_debug |
 			options_edns |
 			options_inet6 |
 			options_inet6_bytestring |
-			options_ip6_dotint |
-			options_no_ip6_dotint |
-			options_single_request |
-			options_single_request_reopen |
-			options_no_tld_query |
-			options_use_vc |
-			options_no_reload |
 			options_insecure1 |
 			options_insecure2 |
+			options_ip6_dotint |
 			options_ndots |
+			options_no_check_names |
+			options_no_ip6_dotint |
+			options_no_reload |
+			options_no_tld_query |
+			options_rotate |
+			options_single_request |
+			options_single_request_reopen |
 			options_tcp |
-			options_trust_ad
+			options_timeout |
+			options_trust_ad |
+			options_use_vc
 		))+;
+	search =     "search" %domain_clean (ws (search_domain) >store_value_ptr %domain_store)+;
+	sortlist =   "sortlist" (ws ip ('/' ip)?)+;
 
 	# document
 	line =  ws? (
 			comment |
-			nameserver |
 			domain |
-			search |
-			lookup |
-			sortlist |
 			family |
-			options
+			lookup |
+			nameserver |
+			options |
+			search |
+			sortlist
 		)? ws? ;
 	main := (line '\n' $nl)* line?;
 }%%
