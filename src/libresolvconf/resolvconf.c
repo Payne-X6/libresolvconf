@@ -27,6 +27,16 @@ int load_defaults(resolv_conf_t *conf)
 		return ret;
 	}
 
+	// TODO initialize nameservers
+
+	char hostname[MAXHOSTNAMELEN];
+	ret = gethostname(hostname, MAXHOSTNAMELEN);
+	char *domainname = strchr(hostname, '.');
+	if (domainname != NULL) {
+		domainname++;
+		vector_push_back(&domains, domainname, strlen(domainname));
+	}
+
 	conf->nameservers = vector_begin(&nameservers);
 	conf->domains = vector_begin(&domains);
 	conf->options = (typeof(conf->options)){
@@ -50,6 +60,7 @@ int load_defaults(resolv_conf_t *conf)
 		.trust_ad = false,
 		.use_vc = false
 	};
+
 	return 0;
 }
 

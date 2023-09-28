@@ -23,6 +23,7 @@ int vector_init(vector_t *vector, size_t init_size)
 	}
 	vector->idx = 0;
 	vector->size = size;
+	vector->data[0] = '\0';
 	return 0;
 }
 
