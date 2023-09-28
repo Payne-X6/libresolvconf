@@ -15,7 +15,7 @@ sudo apt install -y ragel cmake gcc
 
 ```
 cd <working-directory>
-git clone https://github.com/xyz/
+git clone https://github.com/Payne-X6/libresolvconf.git
 ```
 
 3. Create build directory
