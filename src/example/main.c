@@ -20,18 +20,28 @@ int main(int argc, char **argv)
 		return 3;
 	}
 
+	// Print
+	if (!vector_it_end(conf.nameservers)) {
+		printf("nameservers:");
+	}
 	for (vector_it_t it = conf.nameservers;
 	     !vector_it_end(it);
 	     vector_it_next(&it))
 	{
-		printf("%s\n", it);
+		printf(" %s", it);
+	}
+	printf("\n");
+
+	if (!vector_it_end(conf.domains)) {
+		printf("domains:");
 	}
 	for (vector_it_t it = conf.domains;
 	     !vector_it_end(it);
 	     vector_it_next(&it))
 	{
-		printf("%s\n", it);
+		printf(" %s", it);
 	}
+	printf("\n");
 
 	return 0;
 }
