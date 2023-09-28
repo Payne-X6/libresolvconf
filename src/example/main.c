@@ -22,13 +22,13 @@ int main(int argc, char **argv)
 
 	for (vector_it_t it = conf.nameservers;
 	     !vector_it_end(it);
-	     it = vector_it_next(it))
+	     vector_it_next(&it))
 	{
 		printf("%s\n", it);
 	}
 	for (vector_it_t it = conf.domains;
 	     !vector_it_end(it);
-	     it = vector_it_next(it))
+	     vector_it_next(&it))
 	{
 		printf("%s\n", it);
 	}
