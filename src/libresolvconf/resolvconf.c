@@ -1,15 +1,55 @@
+#include "resolvconf.h"
+
 #include <fcntl.h>
+#include <resolv.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <sys/mman.h>
 #include <sys/stat.h>
 
-#include "resolvconf.h"
 #include "parser.h"
+#include "vector.h"
 
 int load_defaults(resolv_conf_t *conf)
 {
+	vector_t nameservers, domains;
+	int ret = vector_init(&nameservers, INET6_ADDRSTRLEN * 3);
+	if (ret) {
+		return ret;
+	}
+
+	ret = vector_init(&domains, MAXHOSTNAMELEN * 4);
+	if (ret) {
+		vector_deinit(&domains);
+		return ret;
+	}
+
+	conf->nameservers = vector_begin(&nameservers);
+	conf->domains = vector_begin(&domains);
+	conf->options = (typeof(conf->options)){
+		.attempts = RES_DFLRETRY,
+		.debug = false,
+		.ends0 = false,
+		.inet6 = false,
+		.insecure1 = false,
+		.insecure2 = false,
+		.ip6_bytestring = false,
+		.ip6_dotint = false,
+		.ndots = 1,
+		.no_check_names = false,
+		.no_reload = false,
+		.no_tld_query = false,
+		.rotate = false,
+		.single_request = false,
+		.single_request_reopen = false,
+		.tcp = false,
+		.timeout = RES_TIMEOUT,
+		.trust_ad = false,
+		.use_vc = false
+	};
 	return 0;
 }
 
@@ -53,5 +93,36 @@ int load_file(resolv_conf_t *conf, const char *path)
 
 int load_env(resolv_conf_t *conf)
 {
+	static const char *LOCALDOMAIN_ENV = "LOCALDOMAIN";
+	static const char *RES_OPTIONS_ENV = "RES_OPTIONS";
+
+	char *localdomain = getenv(LOCALDOMAIN_ENV);
+	if (localdomain) {
+		vector_t domains;
+		int ret = vector_init(&domains, MAXHOSTNAMELEN * 4);
+		if (ret) {
+			return ret;
+		}
+
+		while (localdomain) {
+			char *localdomain_end = strchr(localdomain, ' ');
+			if (localdomain_end == NULL) {
+				vector_push_back(&domains, localdomain, strlen(localdomain));
+				localdomain = localdomain_end;
+			} else {
+				vector_push_back(&domains, localdomain, localdomain_end - localdomain);
+				localdomain = localdomain_end + 1;
+			}
+		}
+
+		free(conf->domains);
+		conf->domains = vector_begin(&domains);
+	}
+
+	char *options = getenv(RES_OPTIONS_ENV);
+	if (options) {
+		//TODO dedicated options automata
+	}
+
 	return 0;
 }
