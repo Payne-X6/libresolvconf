@@ -40,13 +40,14 @@
 
 	# common
 	ws = [\t ]+;
-
-	# ip
-	ip4_octet = (
+	unsigned_byte = (
 			("25" [0-5]) |
 			('2' [0-4] [0-9]) |
 			([0-1]?[0-9]?[0-9])
 		);
+
+	# ip
+	ip4_octet = unsigned_byte;
 	ip6_word = [0-9a-fA-F]{1,4};
 
 	ip4 = ip4_octet '.' ip4_octet '.' ip4_octet '.' ip4_octet;
@@ -75,7 +76,7 @@
 	search_domain = search_domain_word ('.' search_domain_word)* '.'?;
 
 	# cmd options
-	options_attempts =              "attempts" ':' ([0-1]?[0-9]?[0-9]);
+	options_attempts =              "attempts" ':' unsigned_byte;
 	options_debug =                 "debug";
 	options_edns =                  "edns0";
 	options_inet6 =                 "inet6";
@@ -83,7 +84,7 @@
 	options_insecure1 =             "insecure1";
 	options_insecure2 =             "insecure2";
 	options_ip6_dotint =            "ip6-dotint";
-	options_ndots =                 "ndots" ':' ([0-1]?[0-9]?[0-9]);
+	options_ndots =                 "ndots" ':' unsigned_byte;
 	options_no_check_names =        "no-check-names";
 	options_no_ip6_dotint =         "no-ip6-dotint";
 	options_no_reload =             "no-reload";
@@ -92,12 +93,12 @@
 	options_single_request =        "single-request";
 	options_single_request_reopen = "single-request-reopen";
 	options_tcp =                   "tcp";
-	options_timeout =               "timeout" ':' ([0-1]?[0-9]?[0-9]);
+	options_timeout =               "timeout" ':' unsigned_byte;
 	options_trust_ad =              "trust-ad";
 	options_use_vc =                "use-vc";
 
 	# cmd
-	comment =    '#' [^\n]*;
+	comment =    ('#'|';') [^\n]*;
 	domain =     "domain" %domain_clean ws (search_domain) >store_value_ptr %domain_store;
 	family =     "family" (ws "inet" [46]){1,2};
 	lookup =     "lookup" ws (
@@ -107,7 +108,7 @@
 			"file" ws "bind"
 		);
 	nameserver = "nameserver" ws ip;
-	options =    "options" (ws (
+	options_values = (
 			options_attempts |
 			options_debug |
 			options_edns |
@@ -128,7 +129,8 @@
 			options_timeout |
 			options_trust_ad |
 			options_use_vc
-		))+;
+		);
+	options =    "options" (ws options_values)+;
 	search =     "search" %domain_clean (ws (search_domain) >store_value_ptr %domain_store)+;
 	sortlist =   "sortlist" (ws ip ('/' ip)?)+;
 
@@ -143,14 +145,14 @@
 			search |
 			sortlist
 		)? ws? ;
-	main := (line '\n' $nl)* line?;
+	document := (line '\n' $nl)* line?;
 }%%
 
 %% write data;
 
 int parse(resolv_conf_t *out, char *in, size_t len)
 {
-	(void)resolvconf_en_main;
+	(void)resolvconf_en_document;
 
 	vector_t domains, nameservers;
 	int ret = vector_init(&nameservers, INET6_ADDRSTRLEN * 3);

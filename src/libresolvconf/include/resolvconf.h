@@ -7,10 +7,13 @@
 typedef struct {
 	vector_it_t nameservers;
 	vector_it_t domains;
+	int family;
+	int lookup;
+	int sortlist;
 	struct {
-		unsigned attempts               : 3;
-		unsigned timeout                : 5;
-		unsigned ndots                  : 7;
+		uint8_t attempts;
+		uint8_t timeout;
+		uint8_t ndots;
 		bool     debug                  : 1;
 		bool     ends0                  : 1;
 		bool     inet6                  : 1;
