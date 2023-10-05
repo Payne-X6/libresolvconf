@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include <sys/mman.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 
 #include "parser.h"
@@ -39,6 +40,9 @@ int load_defaults(resolv_conf_t *conf)
 
 	conf->nameservers = vector_begin(&nameservers);
 	conf->domains = vector_begin(&domains);
+	conf->family = AF_INET;
+	conf->lookup = 0;
+	conf->sortlist = 0;
 	conf->options = (typeof(conf->options)){
 		.attempts = RES_DFLRETRY,
 		.debug = false,

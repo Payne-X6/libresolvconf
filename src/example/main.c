@@ -43,5 +43,10 @@ int main(int argc, char **argv)
 	}
 	printf("\n");
 
+	printf("options:\n");
+	printf("\tndots: %d\n", conf.options.ndots);
+	printf("\tattempts: %d\n", conf.options.attempts);
+	printf("\ttimeout: %d\n", conf.options.timeout);
+
 	return 0;
 }

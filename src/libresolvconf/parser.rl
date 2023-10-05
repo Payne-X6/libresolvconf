@@ -23,6 +23,26 @@
 		in_begin_p = NULL;
 	}
 
+	action clear_int {
+		in_int = 0;
+	}
+
+	action append_int {
+		in_int = (in_int * 10) + (fc - '0');
+	}
+
+	action attempts_store {
+		out->options.attempts = in_int;
+	}
+
+	action ndots_store {
+		out->options.ndots = in_int;
+	}
+
+	action timeout_store {
+		out->options.timeout = in_int;
+	}
+
 	action domain_clean {
 		vector_clean(&domains);
 	}
@@ -76,7 +96,7 @@
 	search_domain = search_domain_word ('.' search_domain_word)* '.'?;
 
 	# cmd options
-	options_attempts =              "attempts" ':' unsigned_byte;
+	options_attempts =              "attempts" ':' (unsigned_byte >clear_int $append_int %attempts_store);
 	options_debug =                 "debug";
 	options_edns =                  "edns0";
 	options_inet6 =                 "inet6";
@@ -84,7 +104,7 @@
 	options_insecure1 =             "insecure1";
 	options_insecure2 =             "insecure2";
 	options_ip6_dotint =            "ip6-dotint";
-	options_ndots =                 "ndots" ':' unsigned_byte;
+	options_ndots =                 "ndots" ':' (unsigned_byte >clear_int $append_int %ndots_store);
 	options_no_check_names =        "no-check-names";
 	options_no_ip6_dotint =         "no-ip6-dotint";
 	options_no_reload =             "no-reload";
@@ -93,7 +113,7 @@
 	options_single_request =        "single-request";
 	options_single_request_reopen = "single-request-reopen";
 	options_tcp =                   "tcp";
-	options_timeout =               "timeout" ':' unsigned_byte;
+	options_timeout =               "timeout" ':' (unsigned_byte >clear_int $append_int %timeout_store);
 	options_trust_ad =              "trust-ad";
 	options_use_vc =                "use-vc";
 
@@ -170,7 +190,9 @@ int parse(resolv_conf_t *out, char *in, size_t len)
 	// TODO init from hostname
 
 	int curline = 1;
+
 	char *in_begin_p = NULL;
+	unsigned in_int = 0;
 
 	int cs;
 	char *p = in, *pe = in + len, *eof = pe;
@@ -188,7 +210,6 @@ int parse(resolv_conf_t *out, char *in, size_t len)
 
 	out->nameservers = nameservers.data;
 	out->domains = domains.data;
-	out->options.ndots = 1;
 
 	return 0;
 }
