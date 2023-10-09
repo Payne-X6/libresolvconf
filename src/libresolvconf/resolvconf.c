@@ -77,6 +77,8 @@ int load_defaults(resolv_conf_t *conf)
 		.trust_ad = false,
 		.use_vc = false
 	};
+	conf->error.col = 0;
+	conf->error.line = 0;
 
 	return 0;
 }
@@ -85,35 +87,31 @@ int load_file(resolv_conf_t *conf, const char *path)
 {
 	int fd = open(path, O_RDONLY);
 	if(fd < 0) {
-		printf("Error: could not open '%s'\n", path);
-		return -1;
+		return errno;
 	}
 
 	struct stat statbuf;
 	int ret = fstat(fd, &statbuf);
 	if (ret < 0) {
-		printf("Error: could not obtaint stats of '%s'\n", path);
 		close(fd);
-		return -2;
+		return errno;
 	}
 	if (statbuf.st_size == 0) {
 		close(fd);
-		return 0;
+		return E_OK;
 	}
 
 	char *ptr = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
 	close(fd);
 	if (ptr == MAP_FAILED) {
-		printf("Error: file memory mapping failed\n");
-		return -3;
+		return errno;
 	}
 
 	ret = parse(conf, ptr, statbuf.st_size);
 
 	ret = munmap(ptr, statbuf.st_size);
 	if(ret != 0){
-		printf("Error: file memory unmapping failed\n");
-		return -6;
+		return errno;
 	}
 
 	return 0;

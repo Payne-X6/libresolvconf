@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <arpa/inet.h>
 
@@ -125,6 +126,7 @@
 
 	action nl {
 		curline++;
+		curline_begin = fpc + 1;
 	}
 
 	# common
@@ -274,6 +276,7 @@ int parse(resolv_conf_t *out, char *in, size_t len)
 	%% write init;
 
 	int curline = 1;
+	char *curline_begin = in;
 
 	char *in_begin_p = NULL;
 	unsigned in_int = 0;
@@ -286,6 +289,7 @@ int parse(resolv_conf_t *out, char *in, size_t len)
 		vector_deinit(&sortlist);
 
 		// TODO line and column error
+		out->error.line = curline;
 		return E_PARSING;
 	} 
 
