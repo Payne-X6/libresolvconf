@@ -161,7 +161,9 @@
 			(ip6_word ':') {6} ':' ip6_word |
 			(ip6_word ':') {7} ip6_word
 		);
-	ip = (ip4 | ip4in6 | ip6) >store_value_ptr %ip_store;
+	ip6_scope = ('%' [a-zA-Z0-9]+);
+	ip = (ip4 | ip4in6 | ip6);
+	ip_scoped = (ip4 | ip4in6 ip6_scope? | ip6 ip6_scope?);
 
 	# search domain
 	search_domain_word = [a-zA-Z0-9]+;
@@ -204,7 +206,7 @@
 			"file" |
 			"file" ws "bind"
 		);
-	nameserver = "nameserver" ws ip;
+	nameserver = "nameserver" ws (ip_scoped >store_value_ptr %ip_store);
 	options_values = (
 			options_attempts |
 			options_debug |
@@ -229,7 +231,7 @@
 		);
 	options =    "options" (ws options_values)+;
 	search =     "search" %domain_clear (ws (search_domain) >store_value_ptr %domain_store)+;
-	sortlist =   "sortlist" (ws ip ('/' ip)?)+;
+	sortlist =   "sortlist" (ws (ip ('/' ip)?) >store_value_ptr )+;
 
 	# document
 	line =  ws? (
