@@ -247,30 +247,35 @@ int parse(resolv_conf_t *out, char *in, size_t len)
 {
 	(void)resolvconf_en_document;
 
-	vector_t domains, nameservers;
+	vector_t nameservers, domains, sortlist;
 	int ret = vector_init(&nameservers, INET6_ADDRSTRLEN * 3);
 	if (ret != 0) {
-		printf("Error: not enough memory");
-		return -4;
+		return ret;
 	}
 	
 	ret = vector_init(&domains, MAXHOSTNAMELEN * 4);
 	if (ret != 0) {
-		printf("Error: not enough memory");
-		vector_deinit(&domains);
-		return -5;
+		vector_deinit(&nameservers);
+		return ret;
 	}
 	// TODO init from hostname
 
-	int curline = 1;
-
-	char *in_begin_p = NULL;
-	unsigned in_int = 0;
+	ret = vector_init(&sortlist, MAXHOSTNAMELEN * 4);
+	if (ret != 0) {
+		vector_deinit(&nameservers);
+		vector_deinit(&domains);
+		return ret;
+	}
 
 	int cs;
 	char *p = in, *pe = in + len, *eof = pe;
 
 	%% write init;
+
+	int curline = 1;
+
+	char *in_begin_p = NULL;
+	unsigned in_int = 0;
 
 	%% write exec;
 

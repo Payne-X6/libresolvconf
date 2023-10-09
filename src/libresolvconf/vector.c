@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <error.h>
+
 #define likely(x)	__builtin_expect(!!(x), 1)
 #define unlikely(x)	__builtin_expect(!!(x), 0)
 
@@ -19,12 +21,12 @@ int vector_init(vector_t *vector, size_t init_size)
 	size_t size = bit_ceil(init_size);
 	vector->data = malloc(size);
 	if (unlikely(vector->data == NULL)) {
-		return -1;
+		return ENOMEM;
 	}
 	vector->idx = 0;
 	vector->size = size;
 	vector->data[0] = '\0';
-	return 0;
+	return E_OK;
 }
 
 void vector_clean(vector_t *vector)
@@ -35,30 +37,30 @@ void vector_clean(vector_t *vector)
 int vector_reserve(vector_t *vector, size_t size)
 {
 	if (size <= vector->size) {
-		return 0;
+		return E_OK;
 	}
 	size_t new_size = bit_ceil(size);
 	char *data_tmp = realloc(vector->data, new_size);
 	if (unlikely(data_tmp == NULL)) {
-		return -1;
+		return ENOMEM;
 	}
 	vector->data = data_tmp;
 	vector->size = new_size;
 
-	return 0;
+	return E_OK;
 }
 
 int vector_push_back(vector_t *vector, char *src, size_t size)
 {
 	int ret = vector_reserve(vector, vector->idx + size + 2);
-	if (unlikely(ret != 0)) {
+	if (unlikely(ret != E_OK)) {
 		return ret;
 	}
 	memcpy(vector->data + vector->idx, src, size);
 	vector->idx += size;
 	vector->data[vector->idx++] = '\0';
 	vector->data[vector->idx] = '\0';
-	return 0;
+	return E_OK;
 }
 
 vector_it_t vector_begin(vector_t *vector)

@@ -41,7 +41,6 @@ typedef struct {
 	struct {
 		size_t line;
 		size_t col;
-		int code;
 	} error;
 } resolv_conf_t;
 
