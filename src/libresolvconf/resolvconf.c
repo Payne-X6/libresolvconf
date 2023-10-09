@@ -14,9 +14,11 @@
 #include "parser.h"
 #include "vector.h"
 
+#define SORTLISTNAMELEN (MAXHOSTNAMELEN * 2)
+
 int load_defaults(resolv_conf_t *conf)
 {
-	vector_t nameservers, domains;
+	vector_t nameservers, domains, sortlist;
 	int ret = vector_init(&nameservers, INET6_ADDRSTRLEN * 3);
 	if (ret) {
 		return ret;
@@ -24,6 +26,13 @@ int load_defaults(resolv_conf_t *conf)
 
 	ret = vector_init(&domains, MAXHOSTNAMELEN * 4);
 	if (ret) {
+		vector_deinit(&nameservers);
+		return ret;
+	}
+
+	ret = vector_init(&sortlist, SORTLISTNAMELEN * 4);
+	if (ret) {
+		vector_deinit(&nameservers);
 		vector_deinit(&domains);
 		return ret;
 	}
@@ -38,13 +47,15 @@ int load_defaults(resolv_conf_t *conf)
 		vector_push_back(&domains, domainname, strlen(domainname));
 	}
 
+	// TODO initialize sortlist
+
 	conf->nameservers = vector_begin(&nameservers);
 	conf->domains = vector_begin(&domains);
+	conf->sortlist = vector_begin(&sortlist);
 	conf->family[0] = AF_INET;
 	conf->family[1] = AF_INET6;
 	conf->lookup[0] = LOOKUP_BIND;
 	conf->lookup[1] = LOOKUP_FILE;
-	conf->sortlist = 0;
 	conf->options = (typeof(conf->options)){
 		.attempts = RES_DFLRETRY,
 		.debug = false,

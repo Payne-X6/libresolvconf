@@ -14,9 +14,9 @@ typedef enum {
 typedef struct {
 	vector_it_t nameservers;
 	vector_it_t domains;
+	vector_it_t sortlist;
 	int family[2];
 	lookup_t lookup[2];
-	int sortlist;
 	struct {
 		uint8_t attempts;
 		uint8_t timeout;

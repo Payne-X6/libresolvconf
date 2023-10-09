@@ -34,7 +34,9 @@ int main(int argc, char **argv)
 	{
 		printf(" %s", it);
 	}
-	printf("\n");
+	if (!vector_it_end(conf.nameservers)) {
+		printf("\n");
+	}
 
 	if (!vector_it_end(conf.domains)) {
 		printf("domains:");
@@ -45,9 +47,23 @@ int main(int argc, char **argv)
 	{
 		printf(" %s", it);
 	}
-	printf("\n");
+	if (!vector_it_end(conf.domains)) {
+		printf("\n");
+	}
 
-	
+	if (!vector_it_end(conf.sortlist)) {
+		printf("sortlist:");
+	}
+	for (vector_it_t it = conf.sortlist;
+	     !vector_it_end(it);
+	     vector_it_next(&it))
+	{
+		printf(" %s", it);
+	}
+	if (!vector_it_end(conf.sortlist)) {
+		printf("\n");
+	}
+
 	switch (conf.family[0]) {
 	case AF_INET:
 		printf("family: inet");
@@ -96,8 +112,6 @@ family_end:
 	}
 
 lookup_end:
-	printf("sortlist:\n");
-
 	printf("options:\n");
 	printf("\tattempts: %d\n", conf.options.attempts);
 	printf("\tdebug: %s\n", bool_to_str(conf.options.debug));
