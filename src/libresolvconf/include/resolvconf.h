@@ -5,11 +5,17 @@
 
 #include "vector_it.h"
 
+typedef enum {
+	LOOKUP_UNSPEC = 0,
+	LOOKUP_BIND = 1,
+	LOOKUP_FILE = 2
+} lookup_t;
+
 typedef struct {
 	vector_it_t nameservers;
 	vector_it_t domains;
-	int family;
-	int lookup;
+	int family[2];
+	lookup_t lookup[2];
 	int sortlist;
 	struct {
 		uint8_t attempts;

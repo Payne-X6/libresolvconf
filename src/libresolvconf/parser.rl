@@ -188,7 +188,12 @@
 	# cmd
 	comment =    ('#'|';') [^\n]*;
 	domain =     "domain" %domain_clean ws (search_domain) >store_value_ptr %domain_store;
-	family =     "family" (ws "inet" [46]){1,2};
+	family =     "family" ws (
+			"inet4" |
+			"inet4" ws "inet6" |
+			"inet6" |
+			"inet6" ws "inet4"
+		);
 	lookup =     "lookup" ws (
 			"bind" |
 			"bind" ws "file" |

@@ -47,18 +47,55 @@ int main(int argc, char **argv)
 	}
 	printf("\n");
 
-	switch (conf.family) {
+	
+	switch (conf.family[0]) {
 	case AF_INET:
-		printf("family: inet\n");
+		printf("family: inet");
 		break;
 	case AF_INET6:
-		printf("family: inet6\n");
+		printf("family: inet6");
 		break;
 	default:
+		goto family_end;
+		break;
+	}
+	switch (conf.family[1]) {
+	case AF_INET:
+		printf(" inet\n");
+		break;
+	case AF_INET6:
+		printf(" inet6\n");
+		break;
+	default:
+		printf("\n");
 		break;
 	}
 
-	printf("lookup:\n");
+family_end:
+	switch (conf.lookup[0]) {
+	case LOOKUP_BIND:
+		printf("lookup: bind");
+		break;
+	case LOOKUP_FILE:
+		printf("lookup: file");
+		break;
+	default:
+		goto lookup_end;
+		break;
+	}
+	switch (conf.lookup[1]) {
+	case LOOKUP_BIND:
+		printf(" bind\n");
+		break;
+	case LOOKUP_FILE:
+		printf(" file\n");
+		break;
+	default:
+		printf("\n");
+		break;
+	}
+
+lookup_end:
 	printf("sortlist:\n");
 
 	printf("options:\n");
