@@ -11,10 +11,9 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 
+#include "defines.h"
 #include "parser.h"
 #include "vector.h"
-
-#define SORTLISTNAMELEN (MAXHOSTNAMELEN * 2)
 
 int load_defaults(resolv_conf_t *conf)
 {
@@ -24,13 +23,13 @@ int load_defaults(resolv_conf_t *conf)
 		return ret;
 	}
 
-	ret = vector_init(&domains, MAXHOSTNAMELEN * 4);
+	ret = vector_init(&domains, DOMAIN_NAME_LEN * 4);
 	if (ret) {
 		vector_deinit(&nameservers);
 		return ret;
 	}
 
-	ret = vector_init(&sortlist, SORTLISTNAMELEN * 4);
+	ret = vector_init(&sortlist, SORTLIST_LEN * 10);
 	if (ret) {
 		vector_deinit(&nameservers);
 		vector_deinit(&domains);
@@ -77,8 +76,10 @@ int load_defaults(resolv_conf_t *conf)
 		.trust_ad = false,
 		.use_vc = false
 	};
-	conf->error.col = 0;
-	conf->error.line = 0;
+	conf->error = (typeof(conf->error)){
+		.col = 0,
+		.line = 0
+	};
 
 	return 0;
 }

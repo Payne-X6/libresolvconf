@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 
 	if (conf.lookup[0] != LOOKUP_UNSPEC) {
 		printf("lookup:");
-		for (lookup_t *it = conf.lookup;
+		for (libresolvconf_lookup_t *it = conf.lookup;
 		     it != (conf.lookup + sizeof(conf.lookup) / sizeof(*conf.lookup)) && (*it) != LOOKUP_UNSPEC;
 		     ++it
 		) {

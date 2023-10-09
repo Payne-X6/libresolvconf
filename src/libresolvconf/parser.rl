@@ -8,6 +8,7 @@
 
 #include <sys/param.h>
 
+#include "defines.h"
 #include "error.h"
 #include "vector.h"
 
@@ -256,14 +257,14 @@ int parse(resolv_conf_t *out, char *in, size_t len)
 		return ret;
 	}
 	
-	ret = vector_init(&domains, MAXHOSTNAMELEN * 4);
+	ret = vector_init(&domains, DOMAIN_NAME_LEN * 4);
 	if (ret != 0) {
 		vector_deinit(&nameservers);
 		return ret;
 	}
 	// TODO init from hostname
 
-	ret = vector_init(&sortlist, MAXHOSTNAMELEN * 4);
+	ret = vector_init(&sortlist, SORTLIST_LEN * 4);
 	if (ret != 0) {
 		vector_deinit(&nameservers);
 		vector_deinit(&domains);

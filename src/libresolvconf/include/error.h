@@ -1,7 +1,6 @@
 #pragma once
 
 #include <errno.h>
-#include <string.h>
 
 typedef enum {
     E_OK = 0,

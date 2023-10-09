@@ -5,8 +5,7 @@
 
 #include <error.h>
 
-#define likely(x)	__builtin_expect(!!(x), 1)
-#define unlikely(x)	__builtin_expect(!!(x), 0)
+#include "defines.h"
 
 static size_t bit_ceil(size_t n) {
 	--n;
@@ -31,6 +30,7 @@ int vector_init(vector_t *vector, size_t init_size)
 
 int vector_reserve(vector_t *vector, size_t size)
 {
+	size += 2;
 	if (size <= vector->size) {
 		return E_OK;
 	}
@@ -47,7 +47,7 @@ int vector_reserve(vector_t *vector, size_t size)
 
 int vector_push_back(vector_t *vector, char *src, size_t size)
 {
-	int ret = vector_reserve(vector, vector->idx + size + 2);
+	int ret = vector_reserve(vector, vector->idx + size);
 	if (unlikely(ret != E_OK)) {
 		return ret;
 	}
