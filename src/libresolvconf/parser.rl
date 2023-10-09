@@ -7,6 +7,7 @@
 
 #include <sys/param.h>
 
+#include "error.h"
 #include "vector.h"
 
 %%{
@@ -111,8 +112,8 @@
 		out->options.use_vc = true;
 	}
 
-	action domain_clean {
-		vector_clean(&domains);
+	action domain_clear {
+		vector_clear(&domains);
 	}
 
 	action domain_store {
@@ -187,7 +188,7 @@
 
 	# cmd
 	comment =    ('#'|';') [^\n]*;
-	domain =     "domain" %domain_clean ws (search_domain) >store_value_ptr %domain_store;
+	domain =     "domain" %domain_clear ws (search_domain) >store_value_ptr %domain_store;
 	family =     "family" ws (
 			"inet4" |
 			"inet4" ws "inet6" |
@@ -224,7 +225,7 @@
 			options_use_vc
 		);
 	options =    "options" (ws options_values)+;
-	search =     "search" %domain_clean (ws (search_domain) >store_value_ptr %domain_store)+;
+	search =     "search" %domain_clear (ws (search_domain) >store_value_ptr %domain_store)+;
 	sortlist =   "sortlist" (ws ip ('/' ip)?)+;
 
 	# document
@@ -280,14 +281,34 @@ int parse(resolv_conf_t *out, char *in, size_t len)
 	%% write exec;
 
 	if (cs < resolvconf_first_final || cs == resolvconf_error) {
-		// TODO line and column error
 		vector_deinit(&nameservers);
 		vector_deinit(&domains);
-		return -7;
+		vector_deinit(&sortlist);
+
+		// TODO line and column error
+		return E_PARSING;
 	} 
 
-	out->nameservers = nameservers.data;
-	out->domains = domains.data;
+	if (vector_is_empty(&nameservers)) {
+		vector_deinit(&nameservers);
+	} else {
+		free(out->nameservers);
+		out->nameservers = nameservers.data;
+	}
+
+	if (vector_is_empty(&domains)) {
+		vector_deinit(&domains);
+	} else {
+		free(out->domains);
+		out->domains = domains.data;
+	}
+
+	if (vector_is_empty(&sortlist)) {
+		vector_deinit(&sortlist);
+	} else {
+		free(out->sortlist);
+		out->sortlist = sortlist.data;
+	}
 
 	return 0;
 }
