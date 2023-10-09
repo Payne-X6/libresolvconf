@@ -16,7 +16,7 @@ typedef struct {
 		uint8_t timeout;
 		uint8_t ndots;
 		bool     debug                  : 1;
-		bool     ends0                  : 1;
+		bool     edns0                  : 1;
 		bool     inet6                  : 1;
 		bool     insecure1              : 1;
 		bool     insecure2              : 1;

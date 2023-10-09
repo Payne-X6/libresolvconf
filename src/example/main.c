@@ -2,7 +2,11 @@
 
 #include <resolvconf.h>
 
+#include <sys/socket.h>
+
 #define RESOLV_CONF_PATH "/etc/resolv.conf"
+
+#define bool_to_str(x) (x ? "true" : "false")
 
 int main(int argc, char **argv)
 {
@@ -43,10 +47,40 @@ int main(int argc, char **argv)
 	}
 	printf("\n");
 
+	switch (conf.family) {
+	case AF_INET:
+		printf("family: inet\n");
+		break;
+	case AF_INET6:
+		printf("family: inet6\n");
+		break;
+	default:
+		break;
+	}
+
+	printf("lookup:\n");
+	printf("sortlist:\n");
+
 	printf("options:\n");
-	printf("\tndots: %d\n", conf.options.ndots);
 	printf("\tattempts: %d\n", conf.options.attempts);
+	printf("\tdebug: %s\n", bool_to_str(conf.options.debug));
+	printf("\tedns0: %s\n", bool_to_str(conf.options.edns0));
+	printf("\tinet6: %s\n", bool_to_str(conf.options.inet6));
+	printf("\tinsecure1: %s\n", bool_to_str(conf.options.insecure1));
+	printf("\tinsecure2: %s\n", bool_to_str(conf.options.insecure2));
+	printf("\tip6-bytestring: %s\n", bool_to_str(conf.options.ip6_bytestring));
+	printf("\tip6-dotint: %s\n", bool_to_str(conf.options.ip6_dotint));
+	printf("\tndots: %d\n", conf.options.ndots);
+	printf("\tno-check-names: %s\n", bool_to_str(conf.options.no_check_names));
+	printf("\tno-reload: %s\n", bool_to_str(conf.options.no_reload));
+	printf("\tno-tld-query: %s\n", bool_to_str(conf.options.no_tld_query));
+	printf("\trotate: %s\n", bool_to_str(conf.options.rotate));
+	printf("\tsingle-request: %s\n", bool_to_str(conf.options.single_request));
+	printf("\tsingle-request-reopen: %s\n", bool_to_str(conf.options.single_request_reopen));
+	printf("\ttcp: %s\n", bool_to_str(conf.options.tcp));
 	printf("\ttimeout: %d\n", conf.options.timeout);
+	printf("\ttrust-ad: %s\n", bool_to_str(conf.options.trust_ad));
+	printf("\tuse-vc: %s\n", bool_to_str(conf.options.use_vc));
 
 	return 0;
 }

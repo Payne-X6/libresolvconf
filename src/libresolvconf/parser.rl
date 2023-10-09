@@ -35,12 +35,80 @@
 		out->options.attempts = in_int;
 	}
 
+	action debug_store {
+		out->options.debug = true;
+	}
+
+	action edns0_store {
+		out->options.edns0 = true;
+	}
+
+	action inet6_store {
+		out->options.inet6 = true;
+	}
+
+	action insecure1_store {
+		out->options.insecure1 = true;
+	}
+
+	action insecure2_store {
+		out->options.insecure2 = true;
+	}
+
+	action ip6_bytestring_store {
+		out->options.ip6_bytestring = true;
+	}
+
+	action ip6_dotint_store {
+		out->options.ip6_dotint = true;
+	}
+
+	action no_check_names_store {
+		out->options.no_check_names = true;
+	}
+
 	action ndots_store {
 		out->options.ndots = in_int;
 	}
 
+	action no_ip6_dotint_store {
+		out->options.ip6_dotint = false;
+	}
+
+	action no_reload_store {
+		out->options.no_reload = true;
+	}
+
+	action no_tld_query_store {
+		out->options.no_tld_query = true;
+	}
+
+	action rotate_store {
+		out->options.rotate = true;
+	}
+
+	action single_request_store {
+		out->options.single_request = true;
+	}
+
+	action single_request_reopen_store {
+		out->options.single_request_reopen = true;
+	}
+
+	action tcp_store {
+		out->options.tcp = true;
+	}
+
 	action timeout_store {
 		out->options.timeout = in_int;
+	}
+
+	action trust_ad_store {
+		out->options.trust_ad = true;
+	}
+
+	action use_vc_store {
+		out->options.use_vc = true;
 	}
 
 	action domain_clean {
@@ -97,25 +165,25 @@
 
 	# cmd options
 	options_attempts =              "attempts" ':' (unsigned_byte >clear_int $append_int %attempts_store);
-	options_debug =                 "debug";
-	options_edns =                  "edns0";
-	options_inet6 =                 "inet6";
-	options_inet6_bytestring =      "ip6-bytestring";
-	options_insecure1 =             "insecure1";
-	options_insecure2 =             "insecure2";
-	options_ip6_dotint =            "ip6-dotint";
+	options_debug =                 "debug" %debug_store;
+	options_edns =                  "edns0" %edns0_store;
+	options_inet6 =                 "inet6" %inet6_store;
+	options_insecure1 =             "insecure1" %insecure1_store;
+	options_insecure2 =             "insecure2" %insecure2_store;
+	options_inet6_bytestring =      "ip6-bytestring" %ip6_bytestring_store;
+	options_ip6_dotint =            "ip6-dotint" %ip6_dotint_store;
 	options_ndots =                 "ndots" ':' (unsigned_byte >clear_int $append_int %ndots_store);
-	options_no_check_names =        "no-check-names";
-	options_no_ip6_dotint =         "no-ip6-dotint";
-	options_no_reload =             "no-reload";
-	options_no_tld_query =          "no-tld-query";
-	options_rotate =                "rotate";
-	options_single_request =        "single-request";
-	options_single_request_reopen = "single-request-reopen";
-	options_tcp =                   "tcp";
+	options_no_check_names =        "no-check-names" %no_check_names_store;
+	options_no_ip6_dotint =         "no-ip6-dotint" %no_ip6_dotint_store;
+	options_no_reload =             "no-reload" %no_reload_store;
+	options_no_tld_query =          "no-tld-query" %no_tld_query_store;
+	options_rotate =                "rotate" %rotate_store;
+	options_single_request =        "single-request" %single_request_store;
+	options_single_request_reopen = "single-request-reopen" %single_request_reopen_store;
+	options_tcp =                   "tcp" %tcp_store;
 	options_timeout =               "timeout" ':' (unsigned_byte >clear_int $append_int %timeout_store);
-	options_trust_ad =              "trust-ad";
-	options_use_vc =                "use-vc";
+	options_trust_ad =              "trust-ad" %trust_ad_store;
+	options_use_vc =                "use-vc" %use_vc_store;
 
 	# cmd
 	comment =    ('#'|';') [^\n]*;

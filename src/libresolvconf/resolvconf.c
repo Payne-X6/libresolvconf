@@ -46,7 +46,7 @@ int load_defaults(resolv_conf_t *conf)
 	conf->options = (typeof(conf->options)){
 		.attempts = RES_DFLRETRY,
 		.debug = false,
-		.ends0 = false,
+		.edns0 = false,
 		.inet6 = false,
 		.insecure1 = false,
 		.insecure2 = false,
