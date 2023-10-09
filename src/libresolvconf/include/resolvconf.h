@@ -9,7 +9,7 @@ typedef enum {
 	LOOKUP_UNSPEC = 0,
 	LOOKUP_BIND = 1,
 	LOOKUP_FILE = 2
-} lookup_t;
+} __attribute__ ((__packed__)) lookup_t;
 
 typedef struct {
 	vector_it_t nameservers;

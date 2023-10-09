@@ -27,88 +27,75 @@ int main(int argc, char **argv)
 	// Print
 	if (!vector_it_end(conf.nameservers)) {
 		printf("nameservers:");
-	}
-	for (vector_it_t it = conf.nameservers;
-	     !vector_it_end(it);
-	     vector_it_next(&it))
-	{
-		printf(" %s", it);
-	}
-	if (!vector_it_end(conf.nameservers)) {
+		for (vector_it_t it = conf.nameservers;
+		     !vector_it_end(it);
+		     vector_it_next(&it)
+		) {
+			printf(" %s", it);
+		}
 		printf("\n");
 	}
 
 	if (!vector_it_end(conf.domains)) {
 		printf("domains:");
-	}
-	for (vector_it_t it = conf.domains;
-	     !vector_it_end(it);
-	     vector_it_next(&it))
-	{
-		printf(" %s", it);
-	}
-	if (!vector_it_end(conf.domains)) {
+		for (vector_it_t it = conf.domains;
+		     !vector_it_end(it);
+		     vector_it_next(&it)
+		) {
+			printf(" %s", it);
+		}
 		printf("\n");
 	}
 
 	if (!vector_it_end(conf.sortlist)) {
 		printf("sortlist:");
-	}
-	for (vector_it_t it = conf.sortlist;
-	     !vector_it_end(it);
-	     vector_it_next(&it))
-	{
-		printf(" %s", it);
-	}
-	if (!vector_it_end(conf.sortlist)) {
+		for (vector_it_t it = conf.sortlist;
+		     !vector_it_end(it);
+		     vector_it_next(&it)
+		) {
+			printf(" %s", it);
+		}
 		printf("\n");
 	}
 
-	switch (conf.family[0]) {
-	case AF_INET:
-		printf("family: inet");
-		break;
-	case AF_INET6:
-		printf("family: inet6");
-		break;
-	default:
-		goto family_end;
-		break;
-	}
-	switch (conf.family[1]) {
-	case AF_INET:
-		printf(" inet\n");
-		break;
-	case AF_INET6:
-		printf(" inet6\n");
-		break;
-	default:
+	if (conf.family[0] != AF_UNSPEC) {
+		printf("family:");
+		for (int *it = conf.family;
+		     it != (conf.family + sizeof(conf.family) / sizeof(*conf.family)) && (*it) != AF_UNSPEC;
+		     ++it
+		) {
+			switch (*it) {
+			case AF_INET:
+				printf(" inet");
+				break;
+			case AF_INET6:
+				printf(" inet6");
+				break;
+			default:
+				break;
+			}
+		}
 		printf("\n");
-		break;
 	}
 
-family_end:
-	switch (conf.lookup[0]) {
-	case LOOKUP_BIND:
-		printf("lookup: bind");
-		break;
-	case LOOKUP_FILE:
-		printf("lookup: file");
-		break;
-	default:
-		goto lookup_end;
-		break;
-	}
-	switch (conf.lookup[1]) {
-	case LOOKUP_BIND:
-		printf(" bind\n");
-		break;
-	case LOOKUP_FILE:
-		printf(" file\n");
-		break;
-	default:
+	if (conf.lookup[0] != LOOKUP_UNSPEC) {
+		printf("lookup:");
+		for (lookup_t *it = conf.lookup;
+		     it != (conf.lookup + sizeof(conf.lookup) / sizeof(*conf.lookup)) && (*it) != LOOKUP_UNSPEC;
+		     ++it
+		) {
+			switch (*it) {
+			case LOOKUP_BIND:
+				printf(" bind");
+				break;
+			case LOOKUP_FILE:
+				printf(" file");
+				break;
+			default:
+				break;
+			}
+		}
 		printf("\n");
-		break;
 	}
 
 lookup_end:
