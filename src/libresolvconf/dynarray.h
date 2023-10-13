@@ -20,10 +20,27 @@
 
 #pragma once
 
-#include <sys/param.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
-#define DOMAIN_NAME_LEN (MAXHOSTNAMELEN + 1)
-#define SORTLIST_LEN    (DOMAIN_NAME_LEN * 2)
+#include "dynarray_cit.h"
 
-#define likely(x)	__builtin_expect(!!(x), 1)
-#define unlikely(x)	__builtin_expect(!!(x), 0)
+typedef struct {
+	char   *data;
+	size_t  size;
+	size_t  idx;
+} dynarray_t;
+
+int vector_init(dynarray_t *vector, size_t init_size);
+
+int vector_reserve(dynarray_t *vector, size_t size);
+
+int vector_push_back(dynarray_t *vector, char *src, size_t size);
+
+bool vector_is_empty(dynarray_t *vector);
+
+lresconf_dynarray_cit_t vector_begin(dynarray_t *vector);
+
+void vector_clear(dynarray_t *vector);
+void vector_deinit(dynarray_t *vector);

@@ -20,10 +20,12 @@
 
 #pragma once
 
-#include <sys/param.h>
+#include <stdbool.h>
 
-#define DOMAIN_NAME_LEN (MAXHOSTNAMELEN + 1)
-#define SORTLIST_LEN    (DOMAIN_NAME_LEN * 2)
+typedef const char *lresconf_dynarray_cit_t;
 
-#define likely(x)	__builtin_expect(!!(x), 1)
-#define unlikely(x)	__builtin_expect(!!(x), 0)
+void lresconf_dynarray_cit_next(lresconf_dynarray_cit_t *it);
+
+bool lresconf_dynarray_cit_end(lresconf_dynarray_cit_t it);
+
+void lresconf_dynarray_cit_destroy(lresconf_dynarray_cit_t *it);

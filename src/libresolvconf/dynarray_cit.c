@@ -18,12 +18,23 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "dynarray_cit.h"
 
-#include <sys/param.h>
+#include <stdlib.h>
 
-#define DOMAIN_NAME_LEN (MAXHOSTNAMELEN + 1)
-#define SORTLIST_LEN    (DOMAIN_NAME_LEN * 2)
+void lresconf_dynarray_cit_next(lresconf_dynarray_cit_t *it)
+{
+	for (; (**it) != '\0'; ++(*it)) {}
+	++(*it);
+}
 
-#define likely(x)	__builtin_expect(!!(x), 1)
-#define unlikely(x)	__builtin_expect(!!(x), 0)
+bool lresconf_dynarray_cit_end(lresconf_dynarray_cit_t it)
+{
+	return *it == '\0';
+}
+
+void lresconf_dynarray_cit_destroy(lresconf_dynarray_cit_t *it)
+{
+	free((void *)*it);
+	*it = NULL;
+}

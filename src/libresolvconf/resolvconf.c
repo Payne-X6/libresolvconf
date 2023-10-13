@@ -1,3 +1,23 @@
+/*
+* 'libresolvconf' is a shared library for parsing resolv.conf files,
+* alongside associated utilities.
+*
+* Copyright (C) 2023 libresolvconf
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "resolvconf.h"
 
 #include <fcntl.h>
@@ -12,14 +32,32 @@
 #include <sys/stat.h>
 
 #include "defines.h"
+#include "dynarray.h"
 #include "parser.h"
-#include "vector.h"
 
-int load_defaults(resolv_conf_t *conf)
+void lresconf_conf_deinit(lresconf_conf_t *conf)
 {
-	vector_t nameservers, domains, sortlist;
+	lresconf_dynarray_cit_destroy(&conf->domains);
+	lresconf_dynarray_cit_destroy(&conf->nameservers);
+	lresconf_dynarray_cit_destroy(&conf->sortlist);
+}
+
+int lresconf_load_defaults(lresconf_conf_t *conf)
+{
+	dynarray_t nameservers, domains, sortlist;
+
 	int ret = vector_init(&nameservers, INET6_ADDRSTRLEN * 3);
 	if (ret) {
+		return ret;
+	}
+	ret = vector_push_back(&nameservers, "127.0.0.1", sizeof("127.0.0.1") - 1);
+	if (ret) {
+		vector_deinit(&nameservers);
+		return ret;
+	}
+	ret = vector_push_back(&nameservers, "::1", sizeof("::1") - 1);
+	if (ret) {
+		vector_deinit(&nameservers);
 		return ret;
 	}
 
@@ -27,6 +65,13 @@ int load_defaults(resolv_conf_t *conf)
 	if (ret) {
 		vector_deinit(&nameservers);
 		return ret;
+	}
+	char hostname[MAXHOSTNAMELEN];
+	ret = gethostname(hostname, MAXHOSTNAMELEN);
+	char *domainname = strchr(hostname, '.');
+	if (domainname != NULL) {
+		domainname++;
+		vector_push_back(&domains, domainname, strlen(domainname));
 	}
 
 	ret = vector_init(&sortlist, SORTLIST_LEN * 10);
@@ -36,25 +81,13 @@ int load_defaults(resolv_conf_t *conf)
 		return ret;
 	}
 
-	// TODO initialize nameservers
-
-	char hostname[MAXHOSTNAMELEN];
-	ret = gethostname(hostname, MAXHOSTNAMELEN);
-	char *domainname = strchr(hostname, '.');
-	if (domainname != NULL) {
-		domainname++;
-		vector_push_back(&domains, domainname, strlen(domainname));
-	}
-
-	// TODO initialize sortlist
-
 	conf->nameservers = vector_begin(&nameservers);
 	conf->domains = vector_begin(&domains);
 	conf->sortlist = vector_begin(&sortlist);
 	conf->family[0] = AF_INET;
 	conf->family[1] = AF_INET6;
-	conf->lookup[0] = LOOKUP_BIND;
-	conf->lookup[1] = LOOKUP_FILE;
+	conf->lookup[0] = IRESCONF_LOOKUP_BIND;
+	conf->lookup[1] = IRESCONF_LOOKUP_FILE;
 	conf->options = (typeof(conf->options)){
 		.attempts = RES_DFLRETRY,
 		.debug = false,
@@ -84,7 +117,7 @@ int load_defaults(resolv_conf_t *conf)
 	return 0;
 }
 
-int load_file(resolv_conf_t *conf, const char *path)
+int lresconf_load_file(lresconf_conf_t *conf, const char *path)
 {
 	int fd = open(path, O_RDONLY);
 	if(fd < 0) {
@@ -99,7 +132,7 @@ int load_file(resolv_conf_t *conf, const char *path)
 	}
 	if (statbuf.st_size == 0) {
 		close(fd);
-		return E_OK;
+		return LRESCONF_EOK;
 	}
 
 	char *ptr = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
@@ -118,14 +151,14 @@ int load_file(resolv_conf_t *conf, const char *path)
 	return 0;
 }
 
-int load_env(resolv_conf_t *conf)
+int lresconf_load_env(lresconf_conf_t *conf)
 {
 	static const char *LOCALDOMAIN_ENV = "LOCALDOMAIN";
 	static const char *RES_OPTIONS_ENV = "RES_OPTIONS";
 
 	char *localdomain = getenv(LOCALDOMAIN_ENV);
 	if (localdomain) {
-		vector_t domains;
+		dynarray_t domains;
 		int ret = vector_init(&domains, MAXHOSTNAMELEN * 4);
 		if (ret) {
 			return ret;
@@ -142,7 +175,7 @@ int load_env(resolv_conf_t *conf)
 			}
 		}
 
-		free(conf->domains);
+		lresconf_dynarray_cit_destroy(&conf->domains);
 		conf->domains = vector_begin(&domains);
 	}
 

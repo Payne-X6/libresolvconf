@@ -1,9 +1,0 @@
-#pragma once
-
-#include <stdbool.h>
-
-typedef char* vector_it_t;
-
-void vector_it_next(vector_it_t *it);
-
-bool vector_it_end(vector_it_t it);

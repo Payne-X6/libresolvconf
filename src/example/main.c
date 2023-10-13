@@ -1,6 +1,26 @@
+/*
+* 'libresolvconf' is a shared library for parsing resolv.conf files,
+* alongside associated utilities.
+*
+* Copyright (C) 2023 libresolvconf
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <stdio.h>
 
-#include <resolvconf.h>
+#include <libresolvconf/resolvconf.h>
 
 #include <sys/socket.h>
 
@@ -10,95 +30,102 @@
 
 int main(int argc, char **argv)
 {
-	resolv_conf_t conf = { 0 };
-	int ret = load_defaults(&conf);
+	lresconf_conf_t conf = { 0 };
+	int ret = lresconf_load_defaults(&conf);
 	if (ret != 0) {
-		return 1;
+		lresconf_conf_deinit(&conf);
+		fprintf(stderr, "Error: %s\n", lresconf_strerror(ret));
+		return ret;
 	}
-	ret = load_file(&conf, RESOLV_CONF_PATH);
+	ret = lresconf_load_file(&conf, RESOLV_CONF_PATH);
 	if (ret != 0) {
-		return 2;
+		lresconf_conf_deinit(&conf);
+		fprintf(stderr, "Error: %s\n", lresconf_strerror(ret));
+		return ret;
 	}
-	ret = load_env(&conf);
+	ret = lresconf_load_env(&conf);
 	if (ret != 0) {
-		return 3;
+		lresconf_conf_deinit(&conf);
+		fprintf(stderr, "Error: %s\n", lresconf_strerror(ret));
+		return ret;
 	}
 
 	// Print
-	if (!vector_it_end(conf.nameservers)) {
-		printf("nameservers:");
-		for (vector_it_t it = conf.nameservers;
-		     !vector_it_end(it);
-		     vector_it_next(&it)
-		) {
-			printf(" %s", it);
-		}
-		printf("\n");
+	printf("nameservers:");
+	for (const char *it = conf.nameservers;
+	     !lresconf_dynarray_cit_end(it);
+	     lresconf_dynarray_cit_next(&it)
+	) {
+		printf(" %s", it);
 	}
+	printf("\n");
 
-	if (!vector_it_end(conf.domains)) {
-		printf("domains:");
-		for (vector_it_t it = conf.domains;
-		     !vector_it_end(it);
-		     vector_it_next(&it)
-		) {
-			printf(" %s", it);
-		}
-		printf("\n");
+	printf("domains:");
+	for (const char *it = conf.domains;
+	     !lresconf_dynarray_cit_end(it);
+	     lresconf_dynarray_cit_next(&it)
+	) {
+		printf(" %s", it);
 	}
+	printf("\n");
 
-	if (!vector_it_end(conf.sortlist)) {
-		printf("sortlist:");
-		for (vector_it_t it = conf.sortlist;
-		     !vector_it_end(it);
-		     vector_it_next(&it)
-		) {
-			printf(" %s", it);
-		}
-		printf("\n");
+	printf("sortlist:");
+	for (const char *it = conf.sortlist;
+	     !lresconf_dynarray_cit_end(it);
+	     lresconf_dynarray_cit_next(&it)
+	) {
+		printf(" %s", it);
 	}
+	printf("\n");
 
-	if (conf.family[0] != AF_UNSPEC) {
-		printf("family:");
-		for (int *it = conf.family;
-		     it != (conf.family + sizeof(conf.family) / sizeof(*conf.family)) && (*it) != AF_UNSPEC;
-		     ++it
-		) {
-			switch (*it) {
-			case AF_INET:
-				printf(" inet");
-				break;
-			case AF_INET6:
-				printf(" inet6");
-				break;
-			default:
-				break;
-			}
+	printf("family:");
+	for (int *it = conf.family;
+	     it != (conf.family + LRESCONF_FAMILY_LEN);
+	     ++it
+	) {
+		switch (*it) {
+		case AF_INET:
+			printf(" inet");
+			break;
+		case AF_INET6:
+			printf(" inet6");
+			break;
+		case AF_UNSPEC:
+			goto break_family;
+		default:
+			fprintf(stderr,
+			        "Error: %s\n",
+			        lresconf_strerror(ENOTSUP));
+			lresconf_conf_deinit(&conf);
+			return ENOTSUP;
 		}
-		printf("\n");
 	}
+	break_family: printf("\n");
 
-	if (conf.lookup[0] != LOOKUP_UNSPEC) {
-		printf("lookup:");
-		for (libresolvconf_lookup_t *it = conf.lookup;
-		     it != (conf.lookup + sizeof(conf.lookup) / sizeof(*conf.lookup)) && (*it) != LOOKUP_UNSPEC;
-		     ++it
-		) {
-			switch (*it) {
-			case LOOKUP_BIND:
-				printf(" bind");
-				break;
-			case LOOKUP_FILE:
-				printf(" file");
-				break;
-			default:
-				break;
-			}
+	printf("lookup:");
+	for (lresconf_lookup_t *it = conf.lookup;
+	     it != (conf.lookup + LRESCONF_LOOKUP_LEN);
+	     ++it
+	) {
+		switch (*it) {
+		case IRESCONF_LOOKUP_BIND:
+			printf(" bind");
+			break;
+		case IRESCONF_LOOKUP_FILE:
+			printf(" file");
+			break;
+		case IRESCONF_LOOKUP_UNSPEC:
+			goto break_lookup;
+		default:
+			fprintf(stderr,
+			        "Error: %s\n",
+			        lresconf_strerror(ENOTSUP));
+			lresconf_conf_deinit(&conf);
+			return ENOTSUP;
 		}
-		printf("\n");
 	}
+	break_lookup: printf("\n");
 
-lookup_end:
 	printf("options:\n");
 	printf("\tattempts: %d\n", conf.options.attempts);
 	printf("\tdebug: %s\n", bool_to_str(conf.options.debug));

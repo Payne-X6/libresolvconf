@@ -1,16 +1,37 @@
+/*
+* 'libresolvconf' is a shared library for parsing resolv.conf files,
+* alongside associated utilities.
+*
+* Copyright (C) 2023 libresolvconf
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "error.h"
 
 #include <string.h>
 
-static const char *error_str[] = {
-    [0] = "Error while parsing input"
-};
+#define errcase(code, str) case code: return str
 
-const char *libresolvconf_strerror(int error)
+const char *lresconf_strerror(int error)
 {
-    if (error < E_BEGIN) {
-        return strerror(error);
-    } else {
-        return error_str[error - (E_BEGIN + 1)];
-    }
+	if (error < LRESCONF_EBEGIN) {
+		return strerror(error);
+	} else {
+		switch (error) {
+			errcase(LRESCONF_EPARSING, "Error while parsing input");
+			default: return NULL;
+		}
+	}
 }

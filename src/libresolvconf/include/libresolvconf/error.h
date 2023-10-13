@@ -20,10 +20,13 @@
 
 #pragma once
 
-#include <sys/param.h>
+#include <errno.h>
 
-#define DOMAIN_NAME_LEN (MAXHOSTNAMELEN + 1)
-#define SORTLIST_LEN    (DOMAIN_NAME_LEN * 2)
+typedef enum {
+	LRESCONF_EOK = 0,
+	LRESCONF_EBEGIN = 0xFF,
+	LRESCONF_EPARSING,
+	LRESCONF_EDOMAINLEN
+} lresconf_error_t;
 
-#define likely(x)	__builtin_expect(!!(x), 1)
-#define unlikely(x)	__builtin_expect(!!(x), 0)
+const char *lresconf_strerror(int error);
