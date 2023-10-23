@@ -30,12 +30,12 @@ jobs:
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         sudo apt update
-        sudo apt install ragel
+        sudo apt install ragel libcriterion-dev
     - name: Install ragel (MacOS)
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
         brew update
-        brew install ragel
+        brew install ragel criterion
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.

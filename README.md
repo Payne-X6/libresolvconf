@@ -10,10 +10,10 @@
 
 Uses the CMake build system.
 
-1. Before building, install the `ragel`, `cmake`, and `gcc` dependencies. For example, on Debian-based distributions 
+1. Before building, install the `ragel`, `cmake`, and `gcc` and `libcriterion-dev` dependencies. For example, on Debian-based distributions 
 
 ```
-sudo apt install -y ragel cmake gcc
+sudo apt install -y ragel cmake gcc libcriterion-dev
 ```
 
 2. Access the working directory and download the source code from the repository
