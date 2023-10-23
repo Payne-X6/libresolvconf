@@ -26,6 +26,8 @@ jobs:
         exclude:
           - os: ubuntu-latest
             package_manager: brew
+          - os: openbsd-latest
+            package_manager: brew
           - os: macos-latest
             package_manager: sudo apt
 
