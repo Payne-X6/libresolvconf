@@ -26,17 +26,16 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Install ragel (Ubuntu)
+    - name: Install dependencies (Ubuntu)
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         sudo apt update
         sudo apt upgrade
         sudo apt install ragel libcriterion-dev
-    - name: Install ragel (MacOS)
+    - name: Install dependencies (MacOS)
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
         brew update
-        brew upgrade
         brew install ragel criterion
 
     - name: Set reusable strings

@@ -1,3 +1,5 @@
 add_executable(test-libresolvconf main.c)
 target_link_libraries(test-libresolvconf criterion)
+target_include_directories(test-libresolvconf SYSTEM PUBLIC /usr/local/include)
+target_link_directories(test-libresolvconf PUBLIC /usr/local/lib)
 add_test(NAME test-libresolvconf COMMAND test-libresolvconf)
