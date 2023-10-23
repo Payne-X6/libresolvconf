@@ -6,3 +6,4 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
 add_subdirectory(src/libresolvconf)
 add_subdirectory(src/example)
+add_subdirectory(src/utils/resolvconf-checker)

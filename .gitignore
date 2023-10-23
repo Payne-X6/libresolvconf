@@ -1,2 +1,4 @@
+.env
+doc/_build
 build
 src/libresolvconf/parser.c

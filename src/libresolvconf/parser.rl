@@ -397,7 +397,11 @@ int parse(lresconf_conf_t *out, char *in, size_t len)
 
 	include common;
 
-	str := (options_values (' ' options_values)*)? '\0';
+	action end {
+		pe = fpc + 1;
+	}
+
+	str := (options_values (' ' options_values)*)? ('\0' $end);
 }%%
 
 %% write data;
@@ -426,7 +430,27 @@ int parse_env_opts(lresconf_conf_t *out, char *in)
 
 	include common;
 
-    str := "asdf" options_values '\0';
+	action store_value_ptr {
+		in_begin_p = fpc;
+	}
+
+	action domain_store {
+		assert(in_begin_p);
+		ptrdiff_t len = fpc - in_begin_p;
+		if (len > 254) {
+			out->error.line = curline;
+			out->error.col = in_begin_p - curline_begin;
+			return LRESCONF_EPARSING;
+		}
+		vector_push_back(&domains, in_begin_p, len);
+		in_begin_p = NULL;
+	}
+
+	action end {
+		pe = fpc + 1;
+	}
+
+    str := ((search_domain >store_value_ptr %domain_store) (' ' (search_domain >store_value_ptr %domain_store))*)? ('\0' $end);
 }%%
 
 %% write data;
@@ -434,18 +458,28 @@ int parse_env_opts(lresconf_conf_t *out, char *in)
 int parse_env_domains(lresconf_conf_t *out, char *in)
 {
     (void)env_domains_en_str;
-	int cs;
-	char *p = in, *pe = NULL;
+
+	dynarray_t domains;
+	int ret = vector_init(&domains, DOMAIN_NAME_LEN * 4);
+	if (ret != 0) {
+		return ret;
+	}
+
+	int cs, curline = 1;
+	char *p = in, *pe = NULL, *curline_begin = NULL, *in_begin_p = NULL;
 
 	%% write init;
-
-	unsigned in_int = 0;
 
 	%% write exec;
 
 	if (cs < env_domains_first_final || cs == env_domains_error) {
 		return LRESCONF_EPARSING;
 	} 
+
+	if (out->domains) {
+		// TODO free
+	}
+	out->domains = domains.data;
 
 	return 0;
 }

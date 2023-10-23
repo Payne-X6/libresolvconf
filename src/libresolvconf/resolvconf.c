@@ -158,30 +158,31 @@ int lresconf_load_env(lresconf_conf_t *conf)
 
 	char *localdomain = getenv(LOCALDOMAIN_ENV);
 	if (localdomain) {
-		dynarray_t domains;
-		int ret = vector_init(&domains, MAXHOSTNAMELEN * 4);
-		if (ret) {
-			return ret;
-		}
+		parse_env_domains(conf, localdomain);
+		// dynarray_t domains;
+		// int ret = vector_init(&domains, MAXHOSTNAMELEN * 4);
+		// if (ret) {
+		// 	return ret;
+		// }
 
-		while (localdomain) {
-			char *localdomain_end = strchr(localdomain, ' ');
-			if (localdomain_end == NULL) {
-				vector_push_back(&domains, localdomain, strlen(localdomain));
-				localdomain = localdomain_end;
-			} else {
-				vector_push_back(&domains, localdomain, localdomain_end - localdomain);
-				localdomain = localdomain_end + 1;
-			}
-		}
+		// while (localdomain) {
+		// 	char *localdomain_end = strchr(localdomain, ' ');
+		// 	if (localdomain_end == NULL) {
+		// 		vector_push_back(&domains, localdomain, strlen(localdomain));
+		// 		localdomain = localdomain_end;
+		// 	} else {
+		// 		vector_push_back(&domains, localdomain, localdomain_end - localdomain);
+		// 		localdomain = localdomain_end + 1;
+		// 	}
+		// }
 
-		lresconf_dynarray_cit_destroy(&conf->domains);
-		conf->domains = vector_begin(&domains);
+		// lresconf_dynarray_cit_destroy(&conf->domains);
+		// conf->domains = vector_begin(&domains);
 	}
 
 	char *options = getenv(RES_OPTIONS_ENV);
 	if (options) {
-		//TODO dedicated options automata
+		parse_env_opts(conf, options);
 	}
 
 	return 0;
