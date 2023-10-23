@@ -41,9 +41,9 @@ jobs:
             cpp_compiler: clang++
         exclude:
           - os: ubuntu-latest
-            package_manager: sudo apt
-          - os: macos-latest
             package_manager: brew
+          - os: macos-latest
+            package_manager: sudo apt
 
     steps:
     - uses: actions/checkout@v3
