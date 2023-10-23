@@ -3,8 +3,7 @@
 name: CMake on multiple platforms
 
 on:
-  push:
-    branches: [ "main" ]
+  push
   pull_request:
     branches: [ "main" ]
 
@@ -23,10 +22,10 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
         build_type: [Release]
         c_compiler: [gcc, clang]
-        package_manager: [sudo apt]
+        package_manager: [sudo apt, brew]
         include:
           - os: ubuntu-latest
             c_compiler: gcc
@@ -34,6 +33,17 @@ jobs:
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
+          - os: macos-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+          - os: macos-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+        exclude:
+          - os: ubuntu-latest
+            package_manager: sudo apt
+          - os: macos-latest
+            package_manager: brew
 
     steps:
     - uses: actions/checkout@v3
