@@ -19,23 +19,10 @@ jobs:
         os: [ubuntu-latest, macos-latest, openbsd-latest]
         build_type: [Release]
         c_compiler: [gcc, clang]
-        package_manager: [sudo apt, brew, pkg_add]
         include:
           - os: ubuntu-latest
           - os: macos-latest
-        exclude:
-          - os: ubuntu-latest
-            package_manager: brew
-          - os: ubuntu-latest
-            package_manager: pkg_add
           - os: openbsd-latest
-            package_manager: sudo apt
-          - os: openbsd-latest
-            package_manager: brew
-          - os: macos-latest
-            package_manager: sudo apt
-          - os: macos-latest
-            package_manager: pkg_add
 
     steps:
     - uses: actions/checkout@v3
