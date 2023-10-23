@@ -19,25 +19,39 @@ jobs:
         os: [ubuntu-latest, macos-latest, openbsd-latest]
         build_type: [Release]
         c_compiler: [gcc, clang]
-        package_manager: [sudo apt install, brew install, pkg_add]
+        package_manager: [sudo apt, brew, pkg_add]
         include:
           - os: ubuntu-latest
           - os: macos-latest
         exclude:
           - os: ubuntu-latest
-            package_manager: [brew install, pkg_add]
+            package_manager: brew
+          - os: ubuntu-latest
+            package_manager: pkg_add
           - os: openbsd-latest
-            package_manager: [sudo apt install, brew install]
+            package_manager: sudo apt
+          - os: openbsd-latest
+            package_manager: brew
           - os: macos-latest
-            package_manager: [sudo apt install, pkg_add]
+            package_manager: sudo apt
+          - os: macos-latest
+            package_manager: pkg_add
 
     steps:
     - uses: actions/checkout@v3
 
     - name: Install ragel
+      if: ${{ matrix.os }} == 'ubuntu-latest'
       run: |
-        ${{ matrix.package_manager }} update
-        ${{ matrix.package_manager }} ragel
+        sudo apt update
+        sudo apt install ragel
+      if: ${{ matrix.os }} == 'macos-latest'
+      run: |
+        brew update
+        brew install ragel
+      if: ${{ matrix.os }} == 'openbsd-latest'
+      run: |
+        pkg_add ragel
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
