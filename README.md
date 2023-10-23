@@ -1,6 +1,6 @@
 # About
 
-`libresolvconf` is a C library that parses `resolv.conf` files and can load ENVIRONMENTAL variables into a predefined structure. It uses Ragel to build automata that parse and partially validate the input, while striving for performance and reliability. It supports multiple `resolv.conf` file standards and is syntax compatible under `Linux` and `OpenBSD`.
+`libresolvconf` is a C library that parses `resolv.conf` files and can load ENVIRONMENTAL variables into a predefined structure. It uses Ragel to build automata that parse and partially validate the input, while striving for performance and reliability. It supports multiple `resolv.conf` file standards and is syntax compatible under `Linux`, `MacOS` and `OpenBSD`.
 
 # Documentation
 
