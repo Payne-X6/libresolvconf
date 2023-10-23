@@ -26,10 +26,12 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         build_type: [Release]
         c_compiler: [gcc, clang, cl]
+        package_manager: [choco, sudo apt]
         include:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
+            package_manager: choco
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
@@ -41,6 +43,8 @@ jobs:
             c_compiler: gcc
           - os: windows-latest
             c_compiler: clang
+          - os: windows-latest
+            package_manager: sudo apt
           - os: ubuntu-latest
             c_compiler: cl
 
@@ -49,8 +53,8 @@ jobs:
 
     - name: Install ragel
       run: |
-        sudo apt update
-        sudo apt install ragel
+        ${{ matrix.package_manager }} update
+        ${{ matrix.package_manager }} install ragel
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
