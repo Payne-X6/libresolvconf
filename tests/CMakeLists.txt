@@ -1,4 +1,4 @@
-add_executable(test-libresolvconf main.c)
+add_executable(test-libresolvconf libresolvconf.c)
 target_link_libraries(test-libresolvconf criterion resolvconf)
 target_include_directories(test-libresolvconf SYSTEM PUBLIC /usr/local/include)
 target_link_directories(test-libresolvconf PUBLIC /usr/local/lib)
