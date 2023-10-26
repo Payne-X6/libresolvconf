@@ -18,7 +18,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "dynarray.h"
+#include "vec_str.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -35,7 +35,7 @@ static size_t bit_ceil(size_t n) {
 	return ++n;
 }
 
-int vector_init(dynarray_t *vector, size_t init_size)
+int vec_str_init(vec_str_t *vector, const size_t init_size)
 {
 	size_t size = bit_ceil(init_size);
 	vector->data = malloc(size);
@@ -48,7 +48,17 @@ int vector_init(dynarray_t *vector, size_t init_size)
 	return LRESCONF_EOK;
 }
 
-int vector_reserve(dynarray_t *vector, size_t size)
+void vec_str_move_arr_cstr(vec_str_t *vector, lresconf_arr_cstr_t *arr)
+{
+	lresconf_arr_cstr_destroy(arr);
+	*arr = vector->data;
+
+	vector->data = NULL;
+	vector->size = 0;
+	vector->idx = 0;
+}
+
+int vec_str_reserve(vec_str_t *vector, size_t size)
 {
 	size += 2;
 	if (size <= vector->size) {
@@ -65,9 +75,9 @@ int vector_reserve(dynarray_t *vector, size_t size)
 	return LRESCONF_EOK;
 }
 
-int vector_push_back(dynarray_t *vector, char *src, size_t size)
+int vec_str_push_back(vec_str_t *vector, char *src, size_t size)
 {
-	int ret = vector_reserve(vector, vector->idx + size);
+	int ret = vec_str_reserve(vector, vector->idx + size);
 	if (unlikely(ret != LRESCONF_EOK)) {
 		return ret;
 	}
@@ -78,22 +88,17 @@ int vector_push_back(dynarray_t *vector, char *src, size_t size)
 	return LRESCONF_EOK;
 }
 
-bool vector_is_empty(dynarray_t *vector)
+bool vec_str_is_empty(vec_str_t *vector)
 {
 	return vector->idx == 0;
 }
 
-lresconf_arr_cstr_it_t vector_begin(dynarray_t *vector)
-{
-	return vector->data;
-}
-
-void vector_clear(dynarray_t *vector)
+void vec_str_clear(vec_str_t *vector)
 {
 	vector->idx = 0;
 }
 
-void vector_deinit(dynarray_t *vector)
+void vec_str_deinit(vec_str_t *vector)
 {
 	free(vector->data);
 	vector->data = NULL;

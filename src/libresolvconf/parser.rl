@@ -29,7 +29,7 @@
 #include <sys/param.h>
 
 #include "defines.h"
-#include "dynarray.h"
+#include "vec_str.h"
 #include "error.h"
 
 %%{
@@ -191,12 +191,12 @@
 	action ip_store {
 		assert(in_begin_p);
 		ptrdiff_t len = fpc - in_begin_p;
-		vector_push_back(&nameservers, in_begin_p, len);
+		vec_str_push_back(&nameservers, in_begin_p, len);
 		in_begin_p = NULL;
 	}
 
 	action domain_clear {
-		vector_clear(&domains);
+		vec_str_clear(&domains);
 	}
 
 	action domain_store {
@@ -207,7 +207,7 @@
 			out->error.col = in_begin_p - curline_begin;
 			return LRESCONF_EPARSING;
 		}
-		vector_push_back(&domains, in_begin_p, len);
+		vec_str_push_back(&domains, in_begin_p, len);
 		in_begin_p = NULL;
 	}
 
@@ -326,22 +326,22 @@ int parse(lresconf_conf_t *out, char *in, size_t len)
 {
 	(void)resolvconf_en_document;
 
-	dynarray_t nameservers, domains, sortlist;
-	int ret = vector_init(&nameservers, INET6_ADDRSTRLEN * 3);
+	vec_str_t nameservers, domains, sortlist;
+	int ret = vec_str_init(&nameservers, INET6_ADDRSTRLEN * 3);
 	if (ret != 0) {
 		return ret;
 	}
 	
-	ret = vector_init(&domains, DOMAIN_NAME_LEN * 4);
+	ret = vec_str_init(&domains, DOMAIN_NAME_LEN * 4);
 	if (ret != 0) {
-		vector_deinit(&nameservers);
+		vec_str_deinit(&nameservers);
 		return ret;
 	}
 
-	ret = vector_init(&sortlist, SORTLIST_LEN * 4);
+	ret = vec_str_init(&sortlist, SORTLIST_LEN * 4);
 	if (ret != 0) {
-		vector_deinit(&nameservers);
-		vector_deinit(&domains);
+		vec_str_deinit(&nameservers);
+		vec_str_deinit(&domains);
 		return ret;
 	}
 
@@ -359,35 +359,30 @@ int parse(lresconf_conf_t *out, char *in, size_t len)
 	%% write exec;
 
 	if (cs < resolvconf_first_final || cs == resolvconf_error) {
-		vector_deinit(&nameservers);
-		vector_deinit(&domains);
-		vector_deinit(&sortlist);
+		vec_str_deinit(&nameservers);
+		vec_str_deinit(&domains);
+		vec_str_deinit(&sortlist);
 
 		out->error.line = curline;
 		out->error.col = p - curline_begin;
 		return LRESCONF_EPARSING;
 	} 
 
-	if (vector_is_empty(&nameservers)) {
-		vector_deinit(&nameservers);
-	} else {
-		lresconf_arr_cstr_destroy(&out->nameservers);
-		out->nameservers = nameservers.data;
+	if (!vec_str_is_empty(&nameservers)) {
+		vec_str_move_arr_cstr(&nameservers, &out->nameservers);
 	}
 
-	if (vector_is_empty(&domains)) {
-		vector_deinit(&domains);
-	} else {
-		lresconf_arr_cstr_destroy(&out->domains);
-		out->domains = domains.data;
+	if (!vec_str_is_empty(&domains)) {
+		vec_str_move_arr_cstr(&domains, &out->domains);
 	}
 
-	if (vector_is_empty(&sortlist)) {
-		vector_deinit(&sortlist);
-	} else {
-		lresconf_arr_cstr_destroy(&out->sortlist);
-		out->sortlist = sortlist.data;
+	if (!vec_str_is_empty(&sortlist)) {
+		vec_str_move_arr_cstr(&sortlist, &out->sortlist);
 	}
+
+	vec_str_deinit(&nameservers);
+	vec_str_deinit(&domains);
+	vec_str_deinit(&sortlist);
 
 	return 0;
 }
@@ -442,7 +437,7 @@ int parse_env_opts(lresconf_conf_t *out, char *in)
 			out->error.col = in_begin_p - curline_begin;
 			return LRESCONF_EPARSING;
 		}
-		vector_push_back(&domains, in_begin_p, len);
+		vec_str_push_back(&domains, in_begin_p, len);
 		in_begin_p = NULL;
 	}
 
@@ -459,8 +454,8 @@ int parse_env_domains(lresconf_conf_t *out, char *in)
 {
     (void)env_domains_en_str;
 
-	dynarray_t domains;
-	int ret = vector_init(&domains, DOMAIN_NAME_LEN * 4);
+	vec_str_t domains;
+	int ret = vec_str_init(&domains, DOMAIN_NAME_LEN * 4);
 	if (ret != 0) {
 		return ret;
 	}
@@ -473,13 +468,11 @@ int parse_env_domains(lresconf_conf_t *out, char *in)
 	%% write exec;
 
 	if (cs < env_domains_first_final || cs == env_domains_error) {
+		vec_str_deinit(&domains);
 		return LRESCONF_EPARSING;
 	} 
 
-	if (out->domains) {
-		// TODO free
-	}
-	out->domains = domains.data;
+	vec_str_move_arr_cstr(&domains, &out->domains);
 
 	return 0;
 }

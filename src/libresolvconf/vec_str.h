@@ -30,17 +30,15 @@ typedef struct {
 	lresconf_arr_str_t data;
 	size_t  size;
 	size_t  idx;
-} dynarray_t;
+} vec_str_t;
 
-int vector_init(dynarray_t *vector, size_t init_size);
+int vec_str_init(vec_str_t *vector, const size_t init_size);
+void vec_str_move_arr_cstr(vec_str_t * restrict vector,  lresconf_arr_cstr_t * restrict arr);
 
-int vector_reserve(dynarray_t *vector, size_t size);
+int vec_str_reserve(vec_str_t *vector, size_t size);
 
-int vector_push_back(dynarray_t *vector, char *src, size_t size);
+int vec_str_push_back(vec_str_t * restrict vector, char * restrict src, size_t size);
+bool vec_str_is_empty(vec_str_t *vector);
 
-bool vector_is_empty(dynarray_t *vector);
-
-lresconf_arr_cstr_it_t vector_begin(dynarray_t *vector);
-
-void vector_clear(dynarray_t *vector);
-void vector_deinit(dynarray_t *vector);
+void vec_str_clear(vec_str_t *vector);
+void vec_str_deinit(vec_str_t *vector);

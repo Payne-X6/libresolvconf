@@ -32,7 +32,7 @@
 #include <sys/stat.h>
 
 #include "defines.h"
-#include "dynarray.h"
+#include "vec_str.h"
 #include "parser.h"
 
 void lresconf_conf_deinit(lresconf_conf_t *conf)
@@ -44,26 +44,26 @@ void lresconf_conf_deinit(lresconf_conf_t *conf)
 
 int lresconf_load_defaults(lresconf_conf_t *conf)
 {
-	dynarray_t nameservers, domains, sortlist;
+	vec_str_t nameservers, domains, sortlist;
 
-	int ret = vector_init(&nameservers, INET6_ADDRSTRLEN * 3);
+	int ret = vec_str_init(&nameservers, INET6_ADDRSTRLEN * 3);
 	if (ret) {
 		return ret;
 	}
-	ret = vector_push_back(&nameservers, "127.0.0.1", sizeof("127.0.0.1") - 1);
+	ret = vec_str_push_back(&nameservers, "127.0.0.1", sizeof("127.0.0.1") - 1);
 	if (ret) {
-		vector_deinit(&nameservers);
+		vec_str_deinit(&nameservers);
 		return ret;
 	}
-	ret = vector_push_back(&nameservers, "::1", sizeof("::1") - 1);
+	ret = vec_str_push_back(&nameservers, "::1", sizeof("::1") - 1);
 	if (ret) {
-		vector_deinit(&nameservers);
+		vec_str_deinit(&nameservers);
 		return ret;
 	}
 
-	ret = vector_init(&domains, DOMAIN_NAME_LEN * 4);
+	ret = vec_str_init(&domains, DOMAIN_NAME_LEN * 4);
 	if (ret) {
-		vector_deinit(&nameservers);
+		vec_str_deinit(&nameservers);
 		return ret;
 	}
 	char hostname[MAXHOSTNAMELEN];
@@ -71,19 +71,19 @@ int lresconf_load_defaults(lresconf_conf_t *conf)
 	char *domainname = strchr(hostname, '.');
 	if (domainname != NULL) {
 		domainname++;
-		vector_push_back(&domains, domainname, strlen(domainname));
+		vec_str_push_back(&domains, domainname, strlen(domainname));
 	}
 
-	ret = vector_init(&sortlist, SORTLIST_LEN * 10);
+	ret = vec_str_init(&sortlist, SORTLIST_LEN * 10);
 	if (ret) {
-		vector_deinit(&nameservers);
-		vector_deinit(&domains);
+		vec_str_deinit(&nameservers);
+		vec_str_deinit(&domains);
 		return ret;
 	}
 
-	conf->nameservers = vector_begin(&nameservers);
-	conf->domains = vector_begin(&domains);
-	conf->sortlist = vector_begin(&sortlist);
+	vec_str_move_arr_cstr(&nameservers, &conf->nameservers);
+	vec_str_move_arr_cstr(&domains, &conf->domains);
+	vec_str_move_arr_cstr(&sortlist, &conf->sortlist);
 	conf->family[0] = AF_INET;
 	conf->family[1] = AF_INET6;
 	conf->lookup[0] = IRESCONF_LOOKUP_BIND;
@@ -159,25 +159,6 @@ int lresconf_load_env(lresconf_conf_t *conf)
 	char *localdomain = getenv(LOCALDOMAIN_ENV);
 	if (localdomain) {
 		parse_env_domains(conf, localdomain);
-		// dynarray_t domains;
-		// int ret = vector_init(&domains, MAXHOSTNAMELEN * 4);
-		// if (ret) {
-		// 	return ret;
-		// }
-
-		// while (localdomain) {
-		// 	char *localdomain_end = strchr(localdomain, ' ');
-		// 	if (localdomain_end == NULL) {
-		// 		vector_push_back(&domains, localdomain, strlen(localdomain));
-		// 		localdomain = localdomain_end;
-		// 	} else {
-		// 		vector_push_back(&domains, localdomain, localdomain_end - localdomain);
-		// 		localdomain = localdomain_end + 1;
-		// 	}
-		// }
-
-		// lresconf_dynarray_cit_destroy(&conf->domains);
-		// conf->domains = vector_begin(&domains);
 	}
 
 	char *options = getenv(RES_OPTIONS_ENV);
