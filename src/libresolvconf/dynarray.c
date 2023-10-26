@@ -55,7 +55,7 @@ int vector_reserve(dynarray_t *vector, size_t size)
 		return LRESCONF_EOK;
 	}
 	size_t new_size = bit_ceil(size);
-	char *data_tmp = realloc(vector->data, new_size);
+	lresconf_arr_str_t data_tmp = realloc(vector->data, new_size);
 	if (unlikely(data_tmp == NULL)) {
 		return ENOMEM;
 	}
@@ -83,7 +83,7 @@ bool vector_is_empty(dynarray_t *vector)
 	return vector->idx == 0;
 }
 
-lresconf_dynarray_cit_t vector_begin(dynarray_t *vector)
+lresconf_arr_cstr_it_t vector_begin(dynarray_t *vector)
 {
 	return vector->data;
 }

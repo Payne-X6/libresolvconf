@@ -29,4 +29,11 @@ typedef enum {
 	LRESCONF_EDOMAINLEN
 } lresconf_error_t;
 
+/**
+ * @brief Wrapper over string.h 'strerror' that extends it with 'libresolvconf' error messages.
+ *
+ * @param[in] error error code.
+ *
+ * @return pointer on string with error message that describes the error code.
+ */
 const char *lresconf_strerror(int error);

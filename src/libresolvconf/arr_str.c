@@ -18,26 +18,28 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "arr_str.h"
 
-#include <stdbool.h>
+#include <stdlib.h>
 
-typedef const char *lresconf_dynarray_cit_t;
+lresconf_arr_cstr_it_t lresconf_arr_cstr_begin(lresconf_arr_cstr_t arr)
+{
+	return (lresconf_arr_cstr_it_t)arr;
+}
 
-/**
- * @brief Get a string representation of the function name.
- *
- * Again, a somewhat longer description with fancy notes etc.
- *
- * @param[out]  str  char* where string representation will be stored.
- *
- * @return 0 on success, or -1 if an error occurred.
- *
- * @pre Same as with @foo. Why?!
- * @post Yeah, really, why?!
- */
-void lresconf_dynarray_cit_next(lresconf_dynarray_cit_t *it);
+void lresconf_arr_cstr_destroy(lresconf_arr_cstr_t *arr)
+{
+	free((void *)*arr);
+	*arr = NULL;
+}
 
-bool lresconf_dynarray_cit_end(lresconf_dynarray_cit_t it);
+void lresconf_arr_cstr_it_next(lresconf_arr_cstr_it_t *it)
+{
+	for (; (**it) != '\0'; ++(*it)) {}
+	++(*it);
+}
 
-void lresconf_dynarray_cit_destroy(lresconf_dynarray_cit_t *it);
+bool lresconf_arr_cstr_it_end(lresconf_arr_cstr_it_t it)
+{
+	return *it == '\0';
+}

@@ -371,21 +371,21 @@ int parse(lresconf_conf_t *out, char *in, size_t len)
 	if (vector_is_empty(&nameservers)) {
 		vector_deinit(&nameservers);
 	} else {
-		lresconf_dynarray_cit_destroy(&out->nameservers);
+		lresconf_arr_cstr_destroy(&out->nameservers);
 		out->nameservers = nameservers.data;
 	}
 
 	if (vector_is_empty(&domains)) {
 		vector_deinit(&domains);
 	} else {
-		lresconf_dynarray_cit_destroy(&out->domains);
+		lresconf_arr_cstr_destroy(&out->domains);
 		out->domains = domains.data;
 	}
 
 	if (vector_is_empty(&sortlist)) {
 		vector_deinit(&sortlist);
 	} else {
-		lresconf_dynarray_cit_destroy(&out->sortlist);
+		lresconf_arr_cstr_destroy(&out->sortlist);
 		out->sortlist = sortlist.data;
 	}
 
