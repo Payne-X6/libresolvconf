@@ -68,8 +68,35 @@ typedef struct {
 	} error;
 } lresconf_conf_t;
 
-void lresconf_conf_deinit(lresconf_conf_t *conf);
-
+/**
+ * @brief Store default values into configuration storage.
+ *
+ * @param[out] conf configuration storage.
+ *
+ * @return when success return LRESCONF_EOK, otherwise error code.
+ */
 int lresconf_load_defaults(lresconf_conf_t *conf);
+/**
+ * @brief Store values parsed from input file into configuration storage.
+ *
+ * @param[out] conf configuration storage.
+ * @param[in] conf input file path.
+ *
+ * @return when success return LRESCONF_EOK, otherwise error code.
+ */
 int lresconf_load_file(lresconf_conf_t *conf, const char *path);
+/**
+ * @brief Store values parsed from environmental variables into configuration storage.
+ *
+ * @param[out] conf configuration storage.
+ *
+ * @return when success return LRESCONF_EOK, otherwise error code.
+ */
 int lresconf_load_env(lresconf_conf_t *conf);
+
+/**
+ * @brief Free configuration from the memory.
+ *
+ * @param[out] conf configuration storage.
+ */
+void lresconf_conf_deinit(lresconf_conf_t *conf);
