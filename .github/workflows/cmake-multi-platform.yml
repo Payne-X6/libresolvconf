@@ -59,6 +59,7 @@ jobs:
         -S `wslpath "${{ github.workspace }}"`
         && cd `wslpath "${{ github.workspace }}/build"`
         && make generate_parser
+        && rm -rf `wslpath "${{ github.workspace }}/build"`
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
