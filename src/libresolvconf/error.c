@@ -31,6 +31,8 @@ const char *lresconf_strerror(int error)
 			return strerror(error);
 		case LRESCONF_EPARSING:
 			return "Error while parsing input";
+		case LRESCONF_EDOMAINLEN:
+			return "Domain is too long";
 		default:
 			return NULL;
 	}
