@@ -52,18 +52,18 @@ int main(int argc, char **argv)
 
 	// Print
 	printf("nameservers:");
-	for (const char *it = conf.nameservers;
-	     !lresconf_dynarray_cit_end(it);
-	     lresconf_dynarray_cit_next(&it)
+	for (lresconf_arr_cstr_it_t it = conf.nameservers;
+	     !lresconf_arr_cstr_it_end(it);
+	     lresconf_arr_cstr_it_next(&it)
 	) {
 		printf(" %s", it);
 	}
 	printf("\n");
 
 	printf("domains:");
-	for (const char *it = conf.domains;
-	     !lresconf_dynarray_cit_end(it);
-	     lresconf_dynarray_cit_next(&it)
+	for (lresconf_arr_cstr_it_t it = conf.domains;
+	     !lresconf_arr_cstr_it_end(it);
+	     lresconf_arr_cstr_it_next(&it)
 	) {
 		printf(" %s", it);
 	}
@@ -71,8 +71,8 @@ int main(int argc, char **argv)
 
 	printf("sortlist:");
 	for (const char *it = conf.sortlist;
-	     !lresconf_dynarray_cit_end(it);
-	     lresconf_dynarray_cit_next(&it)
+	     !lresconf_arr_cstr_it_end(it);
+	     lresconf_arr_cstr_it_next(&it)
 	) {
 		printf(" %s", it);
 	}

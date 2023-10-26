@@ -24,10 +24,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "dynarray_cit.h"
+#include "arr_str.h"
 
 typedef struct {
-	char   *data;
+	lresconf_arr_str_t data;
 	size_t  size;
 	size_t  idx;
 } dynarray_t;
@@ -40,7 +40,7 @@ int vector_push_back(dynarray_t *vector, char *src, size_t size);
 
 bool vector_is_empty(dynarray_t *vector);
 
-lresconf_dynarray_cit_t vector_begin(dynarray_t *vector);
+lresconf_arr_cstr_it_t vector_begin(dynarray_t *vector);
 
 void vector_clear(dynarray_t *vector);
 void vector_deinit(dynarray_t *vector);

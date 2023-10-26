@@ -43,9 +43,9 @@ Test(str_array, test)
 	"lacinia\0justo.\0Nullam\0sit\0amet\0magna\0in\0magna\0gravida\0"
 	"vehicula.\0Donec\0iaculis\0gravida\0nulla.";
 	for (
-		lresconf_dynarray_cit_t it = array;
-		!lresconf_dynarray_cit_end(it);
-		lresconf_dynarray_cit_next(&it)
+		lresconf_arr_cstr_it_t it = array;
+		!lresconf_arr_cstr_it_end(it);
+		lresconf_arr_cstr_it_next(&it)
 	) {
 		cr_assert(strlen(it) > 0, "Short string");
 	}

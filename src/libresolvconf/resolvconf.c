@@ -37,9 +37,9 @@
 
 void lresconf_conf_deinit(lresconf_conf_t *conf)
 {
-	lresconf_dynarray_cit_destroy(&conf->domains);
-	lresconf_dynarray_cit_destroy(&conf->nameservers);
-	lresconf_dynarray_cit_destroy(&conf->sortlist);
+	lresconf_arr_cstr_destroy(&conf->domains);
+	lresconf_arr_cstr_destroy(&conf->nameservers);
+	lresconf_arr_cstr_destroy(&conf->sortlist);
 }
 
 int lresconf_load_defaults(lresconf_conf_t *conf)

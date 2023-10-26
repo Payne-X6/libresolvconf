@@ -24,7 +24,7 @@
 #include <stdint.h>
 
 #include "error.h"
-#include "dynarray_cit.h"
+#include "arr_str.h"
 
 #define LRESCONF_FAMILY_LEN 2
 #define LRESCONF_LOOKUP_LEN 2
@@ -36,9 +36,9 @@ typedef enum {
 } __attribute__ ((__packed__)) lresconf_lookup_t;
 
 typedef struct {
-	lresconf_dynarray_cit_t nameservers;
-	lresconf_dynarray_cit_t domains;
-	lresconf_dynarray_cit_t sortlist;
+	lresconf_arr_cstr_t nameservers;
+	lresconf_arr_cstr_t domains;
+	lresconf_arr_cstr_t sortlist;
 	int family[LRESCONF_FAMILY_LEN];
 	lresconf_lookup_t lookup[LRESCONF_LOOKUP_LEN];
 	struct {
